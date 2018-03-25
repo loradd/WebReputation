@@ -9,5 +9,5 @@ public interface AggregatorPlugin {
 	
 	public List<AggregatorPost> getPosts(String resource, String type, Date from) throws QuotaExceededException;
 	public List<AggregatorPost> getPosts(String resource, String type, Date from, Date to) throws QuotaExceededException;
-	//public String getDateFromPlugin();
+	
 }

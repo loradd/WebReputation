@@ -1,5 +1,7 @@
 package it.disim.tlp.webreputation.plugin.model.socialnetworkplugin.authentication;
 
+/** @author Lorenzo Addazi */
+
 public class AuthResponse<AUTHRESPONSE_TYPE> {
 	
 	private AUTHRESPONSE_TYPE authResponse;

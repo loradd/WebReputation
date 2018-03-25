@@ -1,5 +1,7 @@
 package it.disim.tlp.webreputation.plugin.model.socialnetworkplugin;
 
+/** @author Lorenzo Addazi */
+
 import it.disim.tlp.webreputation.plugin.model.aggregatorplugin.AggregatorPlugin;
 import it.disim.tlp.webreputation.plugin.model.socialnetworkplugin.authentication.AuthRequest;
 import it.disim.tlp.webreputation.plugin.model.socialnetworkplugin.authentication.AuthResponse;

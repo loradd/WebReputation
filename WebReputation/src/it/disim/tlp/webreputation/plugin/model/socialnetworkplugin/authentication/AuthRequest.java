@@ -1,5 +1,7 @@
 package it.disim.tlp.webreputation.plugin.model.socialnetworkplugin.authentication;
 
+/** @author Lorenzo Addazi */
+
 public class AuthRequest<AUTHREQUEST_TYPE> {
 	
 	private AUTHREQUEST_TYPE authRequest;
@@ -11,7 +13,5 @@ public class AuthRequest<AUTHREQUEST_TYPE> {
 	public AUTHREQUEST_TYPE getAuthRequest() {
 		return authRequest;
 	}
-	
-	
 		
 }

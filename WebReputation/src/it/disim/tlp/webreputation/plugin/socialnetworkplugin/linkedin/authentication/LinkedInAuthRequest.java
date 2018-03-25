@@ -1,5 +1,7 @@
 package it.disim.tlp.webreputation.plugin.socialnetworkplugin.linkedin.authentication;
 
+/** @author Lorenzo Addazi */
+
 public class LinkedInAuthRequest {
 	
 	/* LinkedIn Application API Key */
@@ -23,8 +25,8 @@ public class LinkedInAuthRequest {
 	public LinkedInAuthRequest(){
 		this.apiKey = "7726wxcv6jcfqn";
 		this.secretKey = "EzM9wMfMq7mUC9Jx";
-		this.oAuthUserToken = "6ee3f203-1379-4b74-a2a7-dca7ba8d1224";
-		this.oAuthUserSecret = "8d2bcb65-721f-47fd-be55-b12dcb7c0bae";
+		this.oAuthUserToken = "28f0aabe-2daa-4134-855c-5e5d5b22fba4";
+		this.oAuthUserSecret = "626fe7a7-f9ed-4dbf-86c8-90557c481e69";
 	}
 	/* Get User API Key */
 	public String getApiKey() {

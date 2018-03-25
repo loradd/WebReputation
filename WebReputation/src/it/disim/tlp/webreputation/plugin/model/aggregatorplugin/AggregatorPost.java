@@ -6,12 +6,12 @@ import java.util.Date;
 public class AggregatorPost {
 	
 	private String title;
-	private String text; // contenuto
-	private String author; // autore (utente)
-	private Date date; // data
-	private int visibility; // visibilita
-	private String source; // fonte
-	private String link; // url
+	private String text; 
+	private String author; 
+	private Date date; 
+	private int visibility; 
+	private String source;
+	private String link;
 	
 	public String getTitle() {
 		return title;

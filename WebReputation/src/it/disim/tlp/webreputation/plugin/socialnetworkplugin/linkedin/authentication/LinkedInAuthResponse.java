@@ -1,5 +1,7 @@
 package it.disim.tlp.webreputation.plugin.socialnetworkplugin.linkedin.authentication;
 
+/** @author Lorenzo Addazi */
+
 import org.scribe.model.Token;
 import org.scribe.oauth.OAuthService;
 

@@ -1,5 +1,7 @@
 package it.disim.tlp.webreputation.plugin.socialnetworkplugin.linkedin;
 
+/** @author Lorenzo Addazi */
+
 import it.disim.tlp.webreputation.exceptions.pluginexceptions.QuotaExceededException;
 import it.disim.tlp.webreputation.exceptions.pluginexceptions.ResourceURLFormatException;
 import it.disim.tlp.webreputation.plugin.model.aggregatorplugin.AggregatorPost;
@@ -41,8 +43,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class LinkedInPlugin implements
-		SocialNetworkPlugin<LinkedInAuthRequest, LinkedInAuthResponse> {
+public class LinkedInPlugin implements SocialNetworkPlugin<LinkedInAuthRequest, LinkedInAuthResponse> {
 
 	/* LinkedIn REST API Fixed Prefix */
 	private final static String linkedInApiPrefix = "http://api.linkedin.com/v1/";
@@ -67,98 +68,69 @@ public class LinkedInPlugin implements
 	} 
 	
 	@Override
-	public List<AggregatorPost> getPosts(String resource, String type, Date from)
-			throws QuotaExceededException {
+	public List<AggregatorPost> getPosts(String resource, String type, Date from) throws QuotaExceededException {
 
 		/* LINKEDIN AUTHENTICATION */
 		LinkedInAuthRequest linkedInAuthRequest = new LinkedInAuthRequest();
-		AuthRequest<LinkedInAuthRequest> authRequest = new AuthRequest<LinkedInAuthRequest>(
-				linkedInAuthRequest);
-		AuthResponse<LinkedInAuthResponse> authResponse = this
-				.authentication(authRequest);
+		AuthRequest<LinkedInAuthRequest> authRequest = new AuthRequest<LinkedInAuthRequest>(linkedInAuthRequest);
+		AuthResponse<LinkedInAuthResponse> authResponse = this.authentication(authRequest);
 
 		List<AggregatorPost> result = new ArrayList<AggregatorPost>();
+		
+		String resourceTail = resource.substring(resource.lastIndexOf('/') + 1);
+		boolean isGroup = resourceTail.contains("groups?"); // true if resource points out a group
+		boolean isProfile = resourceTail.contains("view?");
 		try {
-			if (type.toLowerCase().startsWith("group_posts")) {
-
-				result.addAll(this.fetchGroupPostsFromLinkedIn(resource, from,
-						null, authResponse));
-
-			} else if (type.toLowerCase().startsWith("user_groups_posts")) {
-
-				result.addAll(this.fetchAllUserGroupsPostsFromLinkedIn(
-						resource, from, null, authResponse));
-
-			} else if (type.toLowerCase().startsWith("user_companies_updates")) {
-
-				result.addAll(this.fetchAllUserCompaniesUpdatesFromLinkedIn(
-						resource, from, null, authResponse));
-
-			} else if (type.toLowerCase().startsWith("company_updates")) {
-
-				result.addAll(this.fetchAllCompanyUpdatesFromLinkedIn(resource,
-						from, null, authResponse));
-
+			if(isGroup){ // group 
+				result.addAll(this.fetchGroupPostsFromLinkedIn(resource, from, null, authResponse));
+			} else if(isProfile){ //profile
+				result.addAll(this.fetchAllUserGroupsPostsFromLinkedIn(resource, from, null, authResponse));
+				result.addAll(this.fetchAllUserCompaniesUpdatesFromLinkedIn(resource, from, null, authResponse));
+			} else { // company
+				result.addAll(this.fetchAllCompanyUpdatesFromLinkedIn(resource,from, null, authResponse));
 			}
-		} catch (ParserConfigurationException | SAXException | IOException
-				| ResourceURLFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (ParserConfigurationException | SAXException | IOException | ResourceURLFormatException e) {
+				e.printStackTrace();
 		}
-
+		
 		return result;
 	}
-
+	
 	@Override
-	public List<AggregatorPost> getPosts(String resource, String type,
-			Date from, Date to) throws QuotaExceededException {
+	public List<AggregatorPost> getPosts(String resource, String type, Date from, Date to) throws QuotaExceededException {
+		
 		/* LINKEDIN AUTHENTICATION */
 		LinkedInAuthRequest linkedInAuthRequest = new LinkedInAuthRequest();
-		AuthRequest<LinkedInAuthRequest> authRequest = new AuthRequest<LinkedInAuthRequest>(
-				linkedInAuthRequest);
-		AuthResponse<LinkedInAuthResponse> authResponse = this
-				.authentication(authRequest);
+		AuthRequest<LinkedInAuthRequest> authRequest = new AuthRequest<LinkedInAuthRequest>(linkedInAuthRequest);
+		AuthResponse<LinkedInAuthResponse> authResponse = this.authentication(authRequest);
 
 		List<AggregatorPost> result = new ArrayList<AggregatorPost>();
+		
+		String resourceTail = resource.substring(resource.lastIndexOf('/') + 1);
+		boolean isGroup = resourceTail.contains("groups?"); // true if resource points out a group
+		boolean isProfile = resourceTail.contains("view?");
 		try {
-			if (type.toLowerCase().startsWith("group_posts")) {
-
-				result.addAll(this.fetchGroupPostsFromLinkedIn(resource, from,
-						to, authResponse));
-
-			} else if (type.toLowerCase().startsWith("user_groups_posts")) {
-
-				result.addAll(this.fetchAllUserGroupsPostsFromLinkedIn(
-						resource, from, to, authResponse));
-
-			} else if (type.toLowerCase().startsWith("user_companies_updates")) {
-
-				result.addAll(this.fetchAllUserCompaniesUpdatesFromLinkedIn(
-						resource, from, to, authResponse));
-
-			} else if (type.toLowerCase().startsWith("company_updates")) {
-
-				result.addAll(this.fetchAllCompanyUpdatesFromLinkedIn(resource,
-						from, to, authResponse));
-
+			if(isGroup){ // group 
+				result.addAll(this.fetchGroupPostsFromLinkedIn(resource, from, to, authResponse));
+			} else if(isProfile){ //profile
+				result.addAll(this.fetchAllUserGroupsPostsFromLinkedIn(resource, from, to, authResponse));
+				result.addAll(this.fetchAllUserCompaniesUpdatesFromLinkedIn(resource, from, to, authResponse));
+			} else { // company
+				result.addAll(this.fetchAllCompanyUpdatesFromLinkedIn(resource,from, to, authResponse));
 			}
-		} catch (ParserConfigurationException | SAXException | IOException
-				| ResourceURLFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (ParserConfigurationException | SAXException | IOException | ResourceURLFormatException e) {
+				e.printStackTrace();
 		}
-
 		return result;
 	}
 
-	private List<AggregatorPost> fetchAllCompanyUpdatesFromLinkedIn(
-			String resource, Date from, Date to,
-			AuthResponse<LinkedInAuthResponse> authResponse) {
+	private List<AggregatorPost> fetchAllCompanyUpdatesFromLinkedIn(String resource, Date from, Date to, AuthResponse<LinkedInAuthResponse> authResponse) {
 
 		/* Result AggregatorPost List */
 		List<AggregatorPost> result = new ArrayList<AggregatorPost>();
 		/* Company ID or Universal Name */
 		String company = resource.substring(resource.lastIndexOf('/') + 1);
+		String companyCheck = resource.substring(resource.lastIndexOf('/') + 1, resource.lastIndexOf('/') + 2);
 		try {
 			if (company.length() > 0) { // non-empty company url field
 
@@ -169,10 +141,9 @@ public class LinkedInPlugin implements
 				Document document;
 
 				/* Company by Universal Name --> Get ID */
-				if (Pattern.matches("[a-zA-Z]+", company)) {
-
+				if (Pattern.matches("[a-zA-Z]+", companyCheck)) {
 					String companyIdFromUniversalNameRequest = linkedInApiPrefix
-							+ "companies/universal-name=" + company + ":(id)";
+							+ "companies/universal-name=" + company;
 					OAuthRequest getCompanyIdFromUniversalName = new OAuthRequest(
 							Verb.GET, companyIdFromUniversalNameRequest);
 					authResponse
@@ -271,12 +242,6 @@ public class LinkedInPlugin implements
 						 * Update:(Update-Content:(Company-Status-Update:(Share:(
 						 * Content:(Submitted-Url)))))
 						 */
-						/*if (null != companyStatusUpdateShareContent
-								.getElementsByTagName("submitted-url").item(0)) {
-							postLink = companyStatusUpdateShareContent
-									.getElementsByTagName("submitted-url")
-									.item(0).getTextContent();
-						}*/
 						companyUpdate.setLink(resource);//postLink);
 						/*
 						 * Update:(Update-Content:(Company-Status-Update:(Share:(
@@ -451,7 +416,7 @@ public class LinkedInPlugin implements
 		List<AggregatorPost> result = new ArrayList<AggregatorPost>();
 		/* LinkedIn API REST Request String */
 		String userFollowedCompaniesUpdatesRequest = linkedInApiPrefix
-				+ "people/~/following/companies:(id)";
+				+ "people/~/following/companies";
 		try {
 			/* Build LinkedIn REST API Request */
 			OAuthRequest getUserFollowedCompaniesUpdatesRequest = new OAuthRequest(
@@ -487,6 +452,7 @@ public class LinkedInPlugin implements
 		} catch (ParserConfigurationException | SAXException | IOException e) {
 			e.printStackTrace();
 		}
+		
 		return result;
 	}
 
@@ -495,7 +461,7 @@ public class LinkedInPlugin implements
 			AuthResponse<LinkedInAuthResponse> authResponse)
 			throws ParserConfigurationException, SAXException, IOException,
 			ResourceURLFormatException {
-
+		
 		/* RESULT AGGREGATOR POST LIST */
 		List<AggregatorPost> result = new ArrayList<AggregatorPost>();
 
@@ -538,8 +504,6 @@ public class LinkedInPlugin implements
 
 			String groupURL = element.getElementsByTagName("site-group-url")
 					.item(0).getTextContent();
-			// System.out.println(groupURL);
-
 			result.addAll(fetchGroupPostsFromLinkedIn(groupURL, from, to,
 					authResponse));
 		}
@@ -547,23 +511,18 @@ public class LinkedInPlugin implements
 		return result;
 	}
 
-	/* Check if retrieve post data should be encapsulated in a method */
-
-	private List<AggregatorPost> fetchGroupPostsFromLinkedIn(String resource,
-			Date from, Date to, AuthResponse<LinkedInAuthResponse> authResponse)
-			throws ParserConfigurationException, SAXException, IOException,
-			ResourceURLFormatException {
+	private List<AggregatorPost> fetchGroupPostsFromLinkedIn(String resource, Date from, Date to, AuthResponse<LinkedInAuthResponse> authResponse) throws ParserConfigurationException, SAXException, IOException, ResourceURLFormatException {
 
 		/* RESULT AGGREGATOR POST LIST */
 		List<AggregatorPost> result = new ArrayList<AggregatorPost>();
-
+		
 		/* CHECK URL RESOURCE FORMAT */
 		Pattern groupIdPattern = Pattern.compile("gid=([^&]+)");
 		Matcher groupIdMatcher = groupIdPattern.matcher(resource);
 
 		/* CORRECT URL */
 		if (groupIdMatcher.find()) {
-
+			
 			/* LINKEDIN REST API REQUEST STRING */
 			String postsFromGroupRequest = linkedInApiPrefix
 					+ "groups/"
@@ -571,8 +530,7 @@ public class LinkedInPlugin implements
 					+ ":(posts:(title,creator,summary,creation-timestamp,likes,comments,site-group-post-url))";
 
 			/* BUILD LINKEDIN REST API REQUEST */
-			OAuthRequest getPostsFromGroup = new OAuthRequest(Verb.GET,
-					postsFromGroupRequest);
+			OAuthRequest getPostsFromGroup = new OAuthRequest(Verb.GET, postsFromGroupRequest);
 
 			/* AUTHORIZE REQUEST */
 			authResponse
@@ -596,10 +554,9 @@ public class LinkedInPlugin implements
 
 			/* GET ALL POSTS */
 			NodeList groupNodes = document.getElementsByTagName("post");
-
+			
 			/* ITERATE THROUGH POSTS */
 			for (int i = 0; i < groupNodes.getLength(); i++) {
-
 				/* GET SINGLE POST */
 				Element element = (Element) groupNodes.item(i);
 				
@@ -622,7 +579,6 @@ public class LinkedInPlugin implements
 				if ((postDate.after(from) || postDate.equals(from))
 						&& (null == to || postDate.before(to) || postDate
 								.equals(to))) {
-
 					/* NEW POST */
 					AggregatorPost post = new AggregatorPost();
 
